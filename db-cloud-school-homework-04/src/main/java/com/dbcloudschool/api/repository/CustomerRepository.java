@@ -11,5 +11,7 @@ public interface CustomerRepository extends CrudRepository<Customer, Integer> {
 
     Optional<Customer> findById(Integer id);
 
+    Optional<Customer> findByUsername(String username);
+
     void deleteById(Integer id);
 }

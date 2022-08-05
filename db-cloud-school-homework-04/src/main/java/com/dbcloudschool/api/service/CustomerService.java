@@ -1,26 +1,57 @@
 package com.dbcloudschool.api.service;
 
+import com.dbcloudschool.api.dto.CustomerDTO;
 import com.dbcloudschool.api.entities.Customer;
+import com.dbcloudschool.api.mapper.CustomerMapper;
 import com.dbcloudschool.api.repository.CustomerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class CustomerService {
-    @Autowired
-    CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
+    private final CustomerMapper customerMapper;
 
-    public List<Customer> getAllCustomers() {
-        List<Customer> customers = new ArrayList<>();
-        customerRepository.findAll().iterator().forEachRemaining(customers::add);
-        return customers;
+    public List<CustomerDTO> getAllCustomers() {
+        return customerRepository.findAll().stream()
+                .map(customerMapper::toCustomerDTO)
+                .collect(Collectors.toList());
     }
 
-    public Customer getCustomerById(Integer id) {
-        return customerRepository.findById(id).get();
+    public CustomerDTO getCustomerById(Integer id) {
+        return customerMapper.toCustomerDTO(customerRepository.findById(id).get());
+    }
+
+    public CustomerDTO getCustomerByUsername(String username) {
+        return customerMapper.toCustomerDTO(customerRepository.findByUsername(username).get());
+    }
+
+    public List<CustomerDTO> getCustomersByCity(String city) {
+        return customerRepository.findAll().stream()
+                .filter(customer -> {
+                    if (customer.getCity() == null) {
+                        return false;
+                    }
+                    return customer.getCity().equals(city);
+                })
+                .map(customerMapper::toCustomerDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<CustomerDTO> getCustomersByCountry(String country) {
+        return customerRepository.findAll().stream()
+                .filter(customer -> {
+                    if (customer.getCountry() == null) {
+                        return false;
+                    }
+                    return customer.getCountry().equals(country);
+                })
+                .map(customerMapper::toCustomerDTO)
+                .collect(Collectors.toList());
     }
 
     public Customer insertCustomer(Customer customer) {

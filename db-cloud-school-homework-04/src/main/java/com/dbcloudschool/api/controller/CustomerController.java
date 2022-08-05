@@ -1,45 +1,46 @@
 package com.dbcloudschool.api.controller;
 
-import com.dbcloudschool.api.entities.Customer;
 import com.dbcloudschool.api.service.CustomerService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
-
-@RestController
+@Controller
+@RequiredArgsConstructor
+@RequestMapping("customers")
 public class CustomerController {
-    @Autowired
-    CustomerService customerService;
+    private final CustomerService customerService;
 
-    @GetMapping("/customers/all")
-    public List<Customer> getAllCustomers() {
-        return customerService.getAllCustomers();
+    @GetMapping("view")
+    public String viewAllCustomers(Model model) {
+        model.addAttribute("allCustomers", customerService.getAllCustomers());
+        return "customers";
     }
 
-    @GetMapping("/customers/{id}")
-    public Customer getCustomerById(@PathVariable Integer id) {
-        return customerService.getCustomerById(id);
+    @GetMapping("view/id={id}")
+    public String viewCustomersById(@PathVariable Integer id, Model model) {
+        model.addAttribute("customerById", customerService.getCustomerById(id));
+        return "customers";
     }
 
-    @PostMapping("/customers")
-    public Customer insertCustomer(@RequestBody Customer customer) {
-        return customerService.insertCustomer(customer);
+    @GetMapping("view/username={username}")
+    public String viewCustomerByUsername(@PathVariable String username, Model model) {
+        model.addAttribute("customerByUsername", customerService.getCustomerByUsername(username));
+        return "customers";
     }
 
-    @PutMapping("/customers")
-    public Customer updateCustomer(@RequestBody Customer customer) {
-        return customerService.updateCustomer(customer);
+    @GetMapping("view/city={city}")
+    public String viewCustomersByCity(@PathVariable String city, Model model) {
+        model.addAttribute("customersByCity", customerService.getCustomersByCity(city));
+        return "customers";
     }
 
-    @DeleteMapping("/customers/{id}")
-    public void deleteCustomerById(@PathVariable Integer id) {
-        customerService.deleteCustomerById(id);
+    @GetMapping("view/country={country}")
+    public String viewCustomersByCountry(@PathVariable String country, Model model) {
+        model.addAttribute("customersByCountry", customerService.getCustomersByCountry(country));
+        return "customers";
     }
 }

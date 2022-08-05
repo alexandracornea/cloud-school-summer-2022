@@ -1,26 +1,29 @@
 package com.dbcloudschool.api.service;
 
+import com.dbcloudschool.api.dto.OrderDTO;
 import com.dbcloudschool.api.entities.Orders;
+import com.dbcloudschool.api.mapper.OrderMapper;
 import com.dbcloudschool.api.repository.OrderRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class OrderService {
-    @Autowired
-    OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
+    private final OrderMapper orderMapper;
 
-    public List<Orders> getAllOrders() {
-        List<Orders> orders = new ArrayList<>();
-        orderRepository.findAll().iterator().forEachRemaining(orders::add);
-        return orders;
+    public List<OrderDTO> getAllOrders() {
+        return orderRepository.findAll().stream()
+                .map(orderMapper::toOrderDTO)
+                .collect(Collectors.toList());
     }
 
-    public Orders getOrderById(Integer id) {
-        return orderRepository.findById(id).get();
+    public OrderDTO getOrderById(Integer id) {
+        return orderMapper.toOrderDTO(orderRepository.findById(id).get());
     }
 
     public Orders insertOrder(Orders order) {
